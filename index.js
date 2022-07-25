@@ -1,7 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server');
 
 // String, Int, Float, Boolen, Id
-
 const typeDefs = gql`
   type Query {
     hello: String

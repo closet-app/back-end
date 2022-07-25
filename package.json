@@ -1,0 +1,12 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/closet-app/back-end.git",
+  "author": "ShariqAli-Dev <shariqali.dev@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^3.10.0",
+    "graphql": "^16.5.0"
+  }
+}

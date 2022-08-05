@@ -6,11 +6,11 @@ export class Review {
   _id!: number;
 
   @Property({ type: "date" })
-  createdAt = new Date();
+  createdAt: Date = new Date();
 
   @Property({ type: "date", onUpdate: () => new Date() })
-  updatedAtd = new Date();
+  updatedAtd: Date = new Date();
 
   @Property({ type: "text" })
-  name!: string;
+  title!: string;
 }

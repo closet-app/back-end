@@ -7,6 +7,10 @@
     "watch": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon dist/index.js",
+    "migrate:create": "npx mikro-orm migration:create",
+    "migrate:up": "npx mikro-orm migration:up",
+    "migrate:down": "npx mikro-orm migration:down",
+    "migrate:fresh": "npx mikro-orm migration:fresh",
     "start": "node dist/index.js",
     "start2": "ts-node src/index.ts",
     "dev2": "ndemon --exec ts-node src/index.ts"

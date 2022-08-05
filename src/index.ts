@@ -10,6 +10,7 @@ import { ReviewResolver } from "./resolvers/review";
 import { UserResolver } from "./resolvers/user";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import { MyContext } from "./types";
 const { createClient } = require("redis");
 // import { createClient } from "redis";
 
@@ -33,6 +34,7 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
+        sameSite: "lax", // csrf
         secure: __prod__, // cookie only works in https
       },
       saveUninitialized: false,
@@ -46,7 +48,7 @@ const main = async () => {
       resolvers: [HelloResolver, ReviewResolver, UserResolver],
       validate: false,
     }),
-    context: () => ({ em: orm.em.fork() }),
+    context: ({ req, res }): MyContext => ({ em: orm.em.fork(), req, res }),
   });
   await apolloServer.start();
   apolloServer.applyMiddleware({ app });

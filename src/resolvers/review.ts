@@ -5,12 +5,12 @@ import { MyContext } from "../types";
 @Resolver()
 export class ReviewResolver {
   @Query(() => [Review])
-  posts(@Ctx() { em }: MyContext): Promise<Review[]> {
+  reviews(@Ctx() { em }: MyContext): Promise<Review[]> {
     return em.find(Review, {});
   }
 
   @Query(() => Review, { nullable: true })
-  post(
+  review(
     @Arg("id") id: number,
     @Ctx() { em }: MyContext
   ): Promise<Review | null> {

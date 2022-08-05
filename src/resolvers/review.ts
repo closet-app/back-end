@@ -5,12 +5,12 @@ import { MyContext } from "../types";
 @Resolver()
 export class ReviewResolver {
   @Query(() => [Review])
-  posts(@Ctx() { em }: MyContext): Promise<Review[]> {
+  reviews(@Ctx() { em }: MyContext): Promise<Review[]> {
     return em.find(Review, {});
   }
 
   @Query(() => Review, { nullable: true })
-  post(
+  review(
     @Arg("id") id: number,
     @Ctx() { em }: MyContext
   ): Promise<Review | null> {
@@ -22,7 +22,11 @@ export class ReviewResolver {
     @Arg("title") title: string,
     @Ctx() { em }: MyContext
   ): Promise<Review> {
-    const review = em.create(Review, { title });
+    const review = em.create(Review, {
+      title,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     await em.persistAndFlush(review);
     return review;
   }

@@ -1,4 +1,4 @@
-import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Review } from "../entities/Review";
 import { MyContext } from "../types";
 
@@ -39,8 +39,18 @@ export class ReviewResolver {
     }
     if (typeof title !== "undefined") {
       review.title = title;
+      await em.persistAndFlush(review);
     }
 
     return review;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteReview(
+    @Arg("id") id: number,
+    @Ctx() { em }: MyContext
+  ): Promise<boolean> {
+    await em.nativeDelete(Review, { id });
+    return true;
   }
 }

@@ -1,6 +1,6 @@
 import { MikroORM } from "@mikro-orm/core";
 import { __password__, __prod__ } from "./constants";
-import { Review } from "./entities/Reviews";
+import { Review } from "./entities/Review";
 import path from "path";
 
 export default {

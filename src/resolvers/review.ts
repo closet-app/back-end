@@ -22,7 +22,11 @@ export class ReviewResolver {
     @Arg("title") title: string,
     @Ctx() { em }: MyContext
   ): Promise<Review> {
-    const review = em.create(Review, { title });
+    const review = em.create(Review, {
+      title,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     await em.persistAndFlush(review);
     return review;
   }

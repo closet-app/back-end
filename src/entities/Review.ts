@@ -1,22 +1,22 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
 @Entity()
 export class Review {
-  @Field(() => Int)
+  @Field()
   @PrimaryKey()
-  _id!: number;
+  id!: number;
 
-  @Field(() => String)
+  @Field()
   @Property({ type: "date" })
   createdAt: Date = new Date();
 
-  @Field(() => String)
+  @Field()
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAtd: Date = new Date();
 
-  @Field(() => String)
+  @Field()
   @Property({ type: "text" })
   title!: string;
 }

@@ -1,6 +1,6 @@
 import { Ctx, Query, Resolver } from "type-graphql";
-import { MyContext } from "src/types";
-import { Review } from "src/entities/Review";
+import { Review } from "../entities/Review";
+import { MyContext } from "../types";
 
 @Resolver()
 export class ReviewResolver {

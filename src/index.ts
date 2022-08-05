@@ -18,7 +18,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [ReviewResolver],
+      resolvers: [HelloResolver, ReviewResolver],
       validate: false,
     }),
     context: () => ({ em: orm.em.fork }),

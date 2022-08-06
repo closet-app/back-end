@@ -12,7 +12,7 @@ import {
 } from "type-graphql";
 import argon2 from "argon2";
 import buildToken from "../utils/buildToken";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { __tokenSecret__ } from "../constants";
 
 // used for arguments

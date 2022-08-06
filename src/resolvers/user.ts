@@ -10,12 +10,14 @@ import {
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
+import buildToken from "../utils/buildToken";
 
 // used for arguments
 @InputType()
 class UsernamePasswordInput {
   @Field()
   username: string;
+
   @Field()
   password: string;
 }
@@ -36,7 +38,10 @@ class UserResponse {
   errors?: FieldError[];
 
   @Field(() => User, { nullable: true })
-  user?: User;
+  user?: User & { token?: string };
+
+  @Field(() => String, { nullable: true })
+  token?: string;
 }
 
 @Resolver()
@@ -115,8 +120,11 @@ export class UserResolver {
       };
     }
 
+    const token = buildToken(options.username);
+
     return {
       user,
+      token,
     };
   }
 }

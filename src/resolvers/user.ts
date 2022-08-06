@@ -7,15 +7,20 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
+import buildToken from "../utils/buildToken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { __tokenSecret__ } from "../constants";
 
 // used for arguments
 @InputType()
 class UsernamePasswordInput {
   @Field()
   username: string;
+
   @Field()
   password: string;
 }
@@ -36,11 +41,26 @@ class UserResponse {
   errors?: FieldError[];
 
   @Field(() => User, { nullable: true })
-  user?: User;
+  user?: User & { token?: string };
+
+  @Field(() => String, { nullable: true })
+  token?: string;
 }
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User || null)
+  async me(@Arg("token") token: string, @Ctx() { em }: MyContext) {
+    return jwt.verify(token, __tokenSecret__, async (err, decoded: any) => {
+      if (err) {
+        return null;
+      } else {
+        const user = await em.findOne(User, decoded.username);
+        return user;
+      }
+    });
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
@@ -91,7 +111,11 @@ export class UserResolver {
         };
       }
     }
-    return { user };
+
+    return {
+      user,
+      token: buildToken(options.username),
+    };
   }
 
   @Mutation(() => UserResponse)
@@ -117,6 +141,7 @@ export class UserResolver {
 
     return {
       user,
+      token: buildToken(options.username),
     };
   }
 }

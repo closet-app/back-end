@@ -8,12 +8,20 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { ReviewResolver } from "./resolvers/review";
 import { UserResolver } from "./resolvers/user";
+import cors from "cors";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
   await orm.getMigrator().up();
 
   const app = express();
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, ReviewResolver, UserResolver],
@@ -22,7 +30,10 @@ const main = async () => {
     context: () => ({ em: orm.em.fork() }),
   });
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
 
   app.listen(4000, () => {
     console.log("server started on", "http://localhost:4000/graphql");

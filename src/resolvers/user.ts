@@ -69,7 +69,7 @@ export class UserResolver {
     @Arg("options") options: UserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
-    if (options.firstName.length <= 1 || options.firstName.length <= 1) {
+    if (options.firstName.length < 2 || options.lastName.length <= 2) {
       return {
         errors: [
           {

@@ -1,4 +1,4 @@
-import { User } from "../entities/User";
+import { Users } from "../entities/Users";
 import { MyContext } from "src/types";
 import {
   Arg,
@@ -46,8 +46,8 @@ class UserResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
 
-  @Field(() => User, { nullable: true })
-  user?: User & { token?: string };
+  @Field(() => Users, { nullable: true })
+  user?: Users & { token?: string };
 
   @Field(() => String, { nullable: true })
   token?: string;
@@ -55,15 +55,12 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
-  @Query(() => User || null)
+  @Query(() => Users, { nullable: true })
   async me(@Arg("token") token: string, @Ctx() { em }: MyContext) {
     return jwt.verify(token, __tokenSecret__, async (err, decoded: any) => {
-      if (err) {
-        return null;
-      } else {
-        const user = await em.findOne(User, decoded.email);
-        return user;
-      }
+      if (err) return null;
+      const user = await em.findOne(Users, { email: decoded.email });
+      return user;
     });
   }
 
@@ -95,7 +92,7 @@ export class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(options.password);
-    const user = em.create(User, {
+    const user = em.create(Users, {
       firstName: options.firstName,
       lastName: options.lastName,
       email: options.email,
@@ -131,7 +128,7 @@ export class UserResolver {
     @Arg("options") options: UserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { email: options.email });
+    const user = await em.findOne(Users, { email: options.email });
     if (!user) {
       return {
         errors: [{ field: "email", message: "that email doesn't exist" }],

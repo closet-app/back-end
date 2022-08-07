@@ -129,11 +129,11 @@
           "mappedType": "text"
         }
       },
-      "name": "user",
+      "name": "users",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "user_pkey",
+          "keyName": "users_pkey",
           "columnNames": [
             "id"
           ],

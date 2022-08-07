@@ -17,7 +17,7 @@ import { __tokenSecret__ } from "../constants";
 
 // used for arguments
 @InputType()
-class UsernamePasswordInput {
+class UserInput {
   @Field()
   firstName: string;
 
@@ -61,7 +61,7 @@ export class UserResolver {
       if (err) {
         return null;
       } else {
-        const user = await em.findOne(User, decoded.username);
+        const user = await em.findOne(User, decoded.email);
         return user;
       }
     });
@@ -69,7 +69,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: UserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
     if (options.firstName.length <= 1 || options.firstName.length <= 1) {
@@ -128,7 +128,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: UserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(User, { email: options.email });

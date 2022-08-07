@@ -92,8 +92,26 @@
           "length": 6,
           "mappedType": "datetime"
         },
-        "username": {
-          "name": "username",
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "email": {
+          "name": "email",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -114,15 +132,6 @@
       "name": "user",
       "schema": "public",
       "indexes": [
-        {
-          "columnNames": [
-            "username"
-          ],
-          "composite": false,
-          "keyName": "user_username_unique",
-          "primary": false,
-          "unique": true
-        },
         {
           "keyName": "user_pkey",
           "columnNames": [

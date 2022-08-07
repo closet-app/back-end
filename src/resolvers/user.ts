@@ -1,4 +1,4 @@
-import { User } from "../entities/User";
+import { Users } from "../entities/Users";
 import { MyContext } from "src/types";
 import {
   Arg,
@@ -7,15 +7,26 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
+import buildToken from "../utils/buildToken";
+import jwt from "jsonwebtoken";
+import { __tokenSecret__ } from "../constants";
 
 // used for arguments
 @InputType()
-class UsernamePasswordInput {
+class UserInput {
   @Field()
-  username: string;
+  firstName: string;
+
+  @Field()
+  lastName: string;
+
+  @Field()
+  email: string;
+
   @Field()
   password: string;
 }
@@ -35,22 +46,34 @@ class UserResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
 
-  @Field(() => User, { nullable: true })
-  user?: User;
+  @Field(() => Users, { nullable: true })
+  user?: Users & { token?: string };
+
+  @Field(() => String, { nullable: true })
+  token?: string;
 }
 
 @Resolver()
 export class UserResolver {
+  @Query(() => Users, { nullable: true })
+  async me(@Arg("token") token: string, @Ctx() { em }: MyContext) {
+    return jwt.verify(token, __tokenSecret__, async (err, decoded: any) => {
+      if (err) return null;
+      const user = await em.findOne(Users, { email: decoded.email });
+      return user;
+    });
+  }
+
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: UserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
-    if (options.username.length <= 2) {
+    if (options.firstName.length <= 1 || options.firstName.length <= 1) {
       return {
         errors: [
           {
-            field: "username",
+            field: "name",
             message: "length must be greater than 2",
           },
         ],
@@ -69,8 +92,10 @@ export class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(options.password);
-    const user = em.create(User, {
-      username: options.username,
+    const user = em.create(Users, {
+      firstName: options.firstName,
+      lastName: options.lastName,
+      email: options.email,
       password: hashedPassword,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -79,32 +104,34 @@ export class UserResolver {
       await em.persistAndFlush(user);
     } catch (err) {
       // || err.detail.includes('already exists')
-      // duplicate username error
+      // duplicate email error
       if (err.code === "23505") {
         return {
           errors: [
             {
-              field: "username",
-              message: "username already taken",
+              field: "email",
+              message: "email already in use",
             },
           ],
         };
       }
     }
-    return { user };
+
+    return {
+      user,
+      token: buildToken(options.email),
+    };
   }
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em, req }: MyContext
+    @Arg("options") options: UserInput,
+    @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username: options.username });
+    const user = await em.findOne(Users, { email: options.email });
     if (!user) {
       return {
-        errors: [
-          { field: "username", message: "that username doeesn't matter" },
-        ],
+        errors: [{ field: "email", message: "that email doesn't exist" }],
       };
     }
 
@@ -115,10 +142,9 @@ export class UserResolver {
       };
     }
 
-    req.session!.userId = user.id;
-
     return {
       user,
+      token: buildToken(options.email),
     };
   }
 }

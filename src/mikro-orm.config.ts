@@ -2,7 +2,7 @@ import { MikroORM } from "@mikro-orm/core";
 import { __password__, __prod__ } from "./constants";
 import { Review } from "./entities/Review";
 import path from "path";
-import { User } from "./entities/User";
+import { Users } from "./entities/Users";
 
 export default {
   password: __password__,
@@ -10,7 +10,7 @@ export default {
     path: path.join(__dirname, "./migrations"),
     pattern: /^[\w-]+\d+\.[tj]s$/,
   },
-  entities: [Review, User],
+  entities: [Review, Users],
   dbName: "closet",
   type: "postgresql",
   debug: !__prod__,

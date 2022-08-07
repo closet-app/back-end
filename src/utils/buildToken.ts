@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { __tokenSecret__ } from "../constants";
-export default (username: string): string => {
-  const payload = { username };
+export default (email: string): string => {
+  const payload = { email };
 
   const options = {
     expiresIn: "10h",

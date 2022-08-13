@@ -15,22 +15,6 @@ import buildToken from "../utils/buildToken";
 import jwt from "jsonwebtoken";
 import { __tokenSecret__ } from "../constants";
 
-// used for arguments
-@InputType()
-class UserInput {
-  @Field()
-  firstName: string;
-
-  @Field()
-  lastName: string;
-
-  @Field()
-  email: string;
-
-  @Field()
-  password: string;
-}
-
 @ObjectType()
 class FieldError {
   @Field()
@@ -38,6 +22,31 @@ class FieldError {
 
   @Field()
   message: string;
+}
+
+@InputType()
+class LoginUserInput {
+  @Field()
+  email: string;
+
+  @Field()
+  password: string;
+}
+
+// used for arguments
+@InputType()
+class RegisterUserInput extends LoginUserInput {
+  @Field()
+  firstName: string;
+
+  @Field()
+  lastName: string;
+
+  // @Field()
+  // email: string;
+
+  // @Field()
+  // password: string;
 }
 
 // can return from mutations
@@ -66,7 +75,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UserInput,
+    @Arg("options") options: RegisterUserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
     if (options.firstName.length < 2) {
@@ -136,7 +145,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("options") options: UserInput,
+    @Arg("options") options: LoginUserInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(Users, { email: options.email });

@@ -41,12 +41,6 @@ class RegisterUserInput extends LoginUserInput {
 
   @Field()
   lastName: string;
-
-  // @Field()
-  // email: string;
-
-  // @Field()
-  // password: string;
 }
 
 // can return from mutations
